@@ -1,0 +1,1146 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIPENISN - Generator NISN Otomatis (Edisi Khusus 2010/2020)</title>
+    <!-- Tailwind CSS for modern responsive styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts for premium typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Font Awesome for beautiful UI Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f7ff',
+                            100: '#e0effe',
+                            200: '#b9ddfe',
+                            300: '#7cc2fd',
+                            400: '#36a2fc',
+                            500: '#0c85eb',
+                            600: '#0267c7',
+                            700: '#0352a1',
+                            800: '#074685',
+                            900: '#0c3b6e',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+        
+        /* Smooth transitions */
+        .tab-content {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.35s ease;
+        }
+        .tab-content.active {
+            display: block;
+            opacity: 1;
+        }
+
+        /* Virtual Card Hover and Flips effects */
+        .virtual-card {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            perspective: 1000px;
+        }
+        .virtual-card:hover {
+            transform: translateY(-4px) scale(1.01);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        /* Barcode lines styling */
+        .barcode-rect {
+            fill: #1e293b;
+        }
+    </style>
+</head>
+<body class="text-slate-800 antialiased min-h-screen flex flex-col">
+
+    <!-- Navigation Bar -->
+    <header class="bg-gradient-to-r from-brand-900 via-brand-800 to-brand-700 text-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center space-x-3">
+                    <div class="bg-white p-2 rounded-lg shadow-inner flex items-center justify-center">
+                        <i class="fa-solid fa-graduation-cap text-brand-700 text-2xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-extrabold text-xl tracking-tight">SI<span class="text-sky-300">PENISN</span></h1>
+                        <p class="text-xs text-brand-200">Sistem Pembuat & Validator NISN Otomatis</p>
+                    </div>
+                </div>
+                <div class="hidden md:flex space-x-1">
+                    <button onclick="switchTab('single')" id="nav-single" class="tab-btn px-4 py-2 rounded-lg text-sm font-semibold bg-brand-700 text-white shadow-sm transition">
+                        <i class="fa-solid fa-user-plus mr-1.5"></i> Generasi Tunggal
+                    </button>
+                    <button onclick="switchTab('bulk')" id="nav-bulk" class="tab-btn px-4 py-2 rounded-lg text-sm font-semibold text-brand-100 hover:bg-brand-700 hover:text-white transition">
+                        <i class="fa-solid fa-users mr-1.5"></i> Generasi Massal
+                    </button>
+                    <button onclick="switchTab('validator')" id="nav-validator" class="tab-btn px-4 py-2 rounded-lg text-sm font-semibold text-brand-100 hover:bg-brand-700 hover:text-white transition">
+                        <i class="fa-solid fa-square-check mr-1.5"></i> Validasi NISN
+                    </button>
+                    <button onclick="switchTab('info')" id="nav-info" class="tab-btn px-4 py-2 rounded-lg text-sm font-semibold text-brand-100 hover:bg-brand-700 hover:text-white transition">
+                        <i class="fa-solid fa-circle-info mr-1.5"></i> Aturan NISN
+                    </button>
+                </div>
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden">
+                    <button onclick="toggleMobileMenu()" class="text-white hover:text-sky-300 focus:outline-none">
+                        <i id="mobile-menu-icon" class="fa-solid fa-bars text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mobile Navigation Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-brand-800 border-t border-brand-700 transition duration-300 px-4 pt-2 pb-4 space-y-2">
+            <button onclick="switchTab('single'); toggleMobileMenu();" class="w-full text-left px-4 py-2.5 rounded-lg text-sm font-medium text-white hover:bg-brand-700 block transition">
+                <i class="fa-solid fa-user-plus mr-2"></i> Generasi Tunggal
+            </button>
+            <button onclick="switchTab('bulk'); toggleMobileMenu();" class="w-full text-left px-4 py-2.5 rounded-lg text-sm font-medium text-brand-100 hover:bg-brand-700 block transition">
+                <i class="fa-solid fa-users mr-2"></i> Generasi Massal
+            </button>
+            <button onclick="switchTab('validator'); toggleMobileMenu();" class="w-full text-left px-4 py-2.5 rounded-lg text-sm font-medium text-brand-100 hover:bg-brand-700 block transition">
+                <i class="fa-solid fa-square-check mr-2"></i> Validasi NISN
+            </button>
+            <button onclick="switchTab('info'); toggleMobileMenu();" class="w-full text-left px-4 py-2.5 rounded-lg text-sm font-medium text-brand-100 hover:bg-brand-700 block transition">
+                <i class="fa-solid fa-circle-info mr-2"></i> Aturan NISN
+            </button>
+        </div>
+    </header>
+
+    <!-- Notification Toast Container -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 max-w-sm w-full px-4"></div>
+
+    <!-- Main Content -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <!-- Alert Hero Banner -->
+        <div class="bg-gradient-to-r from-sky-50 to-blue-50 border-l-4 border-sky-500 p-4 rounded-r-xl shadow-sm mb-8 flex items-start space-x-3">
+            <div class="flex-shrink-0 text-sky-600">
+                <i class="fa-solid fa-circle-exclamation text-xl mt-0.5"></i>
+            </div>
+            <div>
+                <h3 class="text-sm font-bold text-sky-950">Informasi Aturan Khusus Terpasang</h3>
+                <p class="text-xs text-sky-800 mt-1 leading-relaxed">
+                    Sistem ini mengenerate NISN secara acak namun terstruktur mengikuti standarisasi Kemendikbudristek RI. 
+                    <span class="text-brand-700 font-bold">Aturan Khusus Aktif:</span> Untuk siswa kelahiran tahun <strong>2010</strong> dan <strong>2020</strong>, NISN digenerate dengan awalan <strong>"00"</strong> (format awalan: <code>0010</code> dan <code>0020</code>) untuk memenuhi kebutuhan kompatibilitas sistem data Anda.
+                </p>
+            </div>
+        </div>
+
+        <script>
+            // State management
+            const state = {
+                currentTab: 'single',
+                bulkStudents: [],
+            };
+
+            // Custom Notification Toast Function
+            function showToast(message, type = 'success') {
+                const container = document.getElementById('toast-container');
+                const toast = document.createElement('div');
+                toast.className = `p-4 rounded-xl shadow-lg border text-sm flex items-start space-x-3 transform transition-all duration-300 translate-y-2 opacity-0 bg-white`;
+                
+                let icon = '';
+                let borderTheme = '';
+                if (type === 'success') {
+                    icon = '<i class="fa-solid fa-circle-check text-emerald-500 text-lg"></i>';
+                    borderTheme = 'border-emerald-100 shadow-emerald-50';
+                } else if (type === 'error') {
+                    icon = '<i class="fa-solid fa-circle-xmark text-rose-500 text-lg"></i>';
+                    borderTheme = 'border-rose-100 shadow-rose-50';
+                } else {
+                    icon = '<i class="fa-solid fa-circle-info text-blue-500 text-lg"></i>';
+                    borderTheme = 'border-blue-100 shadow-blue-50';
+                }
+
+                toast.innerHTML = `
+                    <div class="flex-shrink-0">${icon}</div>
+                    <div class="flex-grow">
+                        <p class="font-semibold text-slate-900">${type.charAt(0).toUpperCase() + type.slice(1)}</p>
+                        <p class="text-xs text-slate-500 mt-0.5">${message}</p>
+                    </div>
+                `;
+                
+                toast.classList.add(borderTheme);
+                container.appendChild(toast);
+                
+                // Animate entering
+                setTimeout(() => {
+                    toast.classList.remove('translate-y-2', 'opacity-0');
+                }, 50);
+
+                // Auto destroy after 4 seconds
+                setTimeout(() => {
+                    toast.classList.add('translate-y-2', 'opacity-0');
+                    setTimeout(() => {
+                        toast.remove();
+                    }, 300);
+                }, 4000);
+            }
+
+            // Clipboard Copy Fallback
+            function copyToClipboard(text, entityName = "NISN") {
+                const tempTextArea = document.createElement("textarea");
+                tempTextArea.value = text;
+                document.body.appendChild(tempTextArea);
+                tempTextArea.select();
+                try {
+                    document.execCommand('copy');
+                    showToast(`Berhasil menyalin ${entityName}: ${text} ke clipboard!`, 'success');
+                } catch (err) {
+                    showToast("Gagal menyalin otomatis, silakan salin secara manual.", "error");
+                }
+                document.body.removeChild(tempTextArea);
+            }
+
+            // Generate 10-digit NISN based on year of birth
+            function generateNisnFromYear(year) {
+                if (!year) return '';
+                const yearStr = year.toString().trim();
+                let prefix = '';
+                
+                // Aturan Khusus: Tahun 2010 dan 2020 dijamin diawali dengan 00 (0010 dan 0020)
+                if (yearStr === '2010') {
+                    prefix = '0010'; // Menghasilkan awalan '00' (diikuti 10)
+                } else if (yearStr === '2020') {
+                    prefix = '0020'; // Menghasilkan awalan '00' (diikuti 20)
+                } else {
+                    // Standar Kemendikbud biasa: 3 digit terakhir dari tahun lahir
+                    prefix = yearStr.substring(yearStr.length - 3);
+                }
+                
+                // Hitung berapa digit tersisa agar total menjadi 10 digit angka
+                const remainingLength = 10 - prefix.length;
+                let suffix = '';
+                for (let i = 0; i < remainingLength; i++) {
+                    suffix += Math.floor(Math.random() * 10).toString();
+                }
+                
+                return prefix + suffix;
+            }
+
+            // Helper to generate a dummy SVG Barcode
+            function generateSvgBarcode(digits) {
+                if (!digits || digits.length !== 10) return '';
+                
+                // Construct basic SVG bars
+                let bars = '';
+                let x = 10;
+                // Seed based barcode simulation
+                for (let i = 0; i < digits.length; i++) {
+                    const digit = parseInt(digits[i]);
+                    // Create lines with alternating patterns
+                    const width1 = (digit % 3 === 0) ? 3 : (digit % 2 === 0) ? 1.5 : 0.75;
+                    const width2 = (digit % 3 === 1) ? 2.5 : (digit % 2 === 1) ? 2 : 1.25;
+                    
+                    bars += `<rect x="${x}" y="5" width="${width1}" height="40" class="barcode-rect"/>`;
+                    x += width1 + 2;
+                    bars += `<rect x="${x}" y="5" width="${width2}" height="40" class="barcode-rect"/>`;
+                    x += width2 + 1.5;
+                }
+                
+                return `
+                    <svg viewBox="0 0 ${x + 10} 60" class="w-full h-12" preserveAspectRatio="none">
+                        <g>${bars}</g>
+                        <text x="50%" y="54" text-anchor="middle" font-family="monospace" font-size="7" fill="#475569" letter-spacing="3">${digits}</text>
+                    </svg>
+                `;
+            }
+        </script>
+
+        <!-- TAB 1: GENERASI TUNGGAL -->
+        <div id="tab-single" class="tab-content active space-y-8">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                
+                <!-- Input Panel -->
+                <div class="lg:col-span-5 bg-white rounded-2xl shadow-sm border border-slate-100 p-6 space-y-6">
+                    <div>
+                        <h2 class="text-lg font-bold text-slate-900 flex items-center">
+                            <i class="fa-solid fa-user-gear text-brand-500 mr-2.5"></i>Input Data Siswa
+                        </h2>
+                        <p class="text-xs text-slate-400 mt-1">Isi formulir berikut untuk mengenerate NISN tunggal beserta Kartu Pelajar virtual.</p>
+                    </div>
+
+                    <form id="single-generator-form" onsubmit="event.preventDefault(); triggerSingleGeneration();" class="space-y-4">
+                        <div>
+                            <label for="student-name" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">Nama Lengkap Siswa</label>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400 pointer-events-none">
+                                    <i class="fa-regular fa-user text-sm"></i>
+                                </span>
+                                <input type="text" id="student-name" required placeholder="Contoh: Budi Santoso"
+                                    class="block w-full pl-10 pr-4 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all placeholder:text-slate-400"
+                                    oninput="updateVirtualCardLive()">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label for="student-gender" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">Jenis Kelamin</label>
+                                <select id="student-gender" class="block w-full px-3 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all" onchange="updateVirtualCardLive()">
+                                    <option value="Laki-laki">Laki-laki</option>
+                                    <option value="Perempuan">Perempuan</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="birth-date" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">Tanggal Lahir</label>
+                                <input type="date" id="birth-date" required value="2010-08-17"
+                                    class="block w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all text-slate-600"
+                                    onchange="updateVirtualCardLive()">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="birth-place" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">Tempat Lahir</label>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400 pointer-events-none">
+                                    <i class="fa-solid fa-location-dot text-sm"></i>
+                                </span>
+                                <input type="text" id="birth-place" placeholder="Contoh: Jakarta" value="Jakarta"
+                                    class="block w-full pl-10 pr-4 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all placeholder:text-slate-400"
+                                    oninput="updateVirtualCardLive()">
+                            </div>
+                        </div>
+
+                        <div class="pt-4">
+                            <button type="submit" class="w-full bg-gradient-to-r from-brand-600 to-brand-500 text-white py-3 px-4 rounded-xl text-sm font-semibold hover:from-brand-700 hover:to-brand-600 active:scale-[0.98] transition-all duration-150 flex items-center justify-center shadow-md shadow-brand-100">
+                                <i class="fa-solid fa-wand-magic-sparkles mr-2 text-base"></i> Generate NISN & Kartu
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Output Panel (Virtual Student Card Preview) -->
+                <div class="lg:col-span-7 space-y-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-lg font-bold text-slate-900">Virtual Student Card & Hasil</h3>
+                            <p class="text-xs text-slate-400">Hasil generate instan yang dapat langsung disalin atau diunduh.</p>
+                        </div>
+                        <button onclick="resetSingleForm()" class="text-xs text-rose-500 hover:text-rose-700 font-semibold flex items-center transition">
+                            <i class="fa-solid fa-arrow-rotate-left mr-1"></i> Reset Data
+                        </button>
+                    </div>
+
+                    <!-- The Student Card -->
+                    <div id="virtual-card-element" class="virtual-card relative bg-gradient-to-br from-brand-900 via-brand-800 to-sky-900 text-white rounded-2xl shadow-xl overflow-hidden aspect-[1.586/1] w-full max-w-md mx-auto border border-brand-700 flex flex-col justify-between p-6">
+                        <!-- Top Header Logo -->
+                        <div class="flex items-start justify-between">
+                            <div class="flex items-center space-x-2.5">
+                                <div class="bg-white p-1 rounded-lg shadow flex items-center justify-center w-8 h-8">
+                                    <i class="fa-solid fa-graduation-cap text-brand-700 text-lg"></i>
+                                </div>
+                                <div class="leading-tight">
+                                    <h4 class="font-extrabold text-xs tracking-wider text-sky-300">KARTU NISN VIRTUAL</h4>
+                                    <p class="text-[9px] text-slate-300 font-medium uppercase tracking-tight">Kementerian Pendidikan & Kebudayaan</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <span class="bg-sky-400/20 text-sky-300 text-[8px] font-bold px-2 py-0.5 rounded-full uppercase border border-sky-400/30">Dapodik Mockup</span>
+                            </div>
+                        </div>
+
+                        <!-- Card Body (Photo & Meta Info) -->
+                        <div class="flex items-center space-x-4 my-auto">
+                            <!-- Photo box -->
+                            <div class="relative w-20 h-24 rounded-lg bg-slate-800/80 border border-brand-500/30 overflow-hidden flex flex-col justify-center items-center flex-shrink-0">
+                                <div id="photo-fallback" class="text-slate-500 text-center select-none">
+                                    <i id="gender-avatar-icon" class="fa-solid fa-user-graduate text-3xl text-rose-400"></i>
+                                    <p class="text-[8px] uppercase mt-1 text-slate-400 font-medium">Foto Siswa</p>
+                                </div>
+                                <div class="absolute bottom-0 left-0 right-0 bg-brand-500/80 text-[7px] text-center text-white py-0.5 font-bold uppercase tracking-widest">
+                                    NKRI
+                                </div>
+                            </div>
+                            
+                            <!-- Identity Metadata -->
+                            <div class="flex-grow space-y-2 text-xs min-w-0">
+                                <div>
+                                    <p class="text-[9px] text-sky-300 uppercase font-semibold tracking-wider">Nama Lengkap</p>
+                                    <p id="card-name" class="font-bold text-sm text-white leading-tight truncate">Budi Santoso</p>
+                                </div>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <div>
+                                        <p class="text-[8px] text-sky-300 uppercase font-semibold tracking-wider">TTL</p>
+                                        <p id="card-ttl" class="font-medium text-[10px] truncate">Jakarta, 17-08-2010</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-[8px] text-sky-300 uppercase font-semibold tracking-wider">Jenis Kelamin</p>
+                                        <p id="card-gender" class="font-medium text-[10px]">Laki-laki</p>
+                                    </div>
+                                </div>
+                                <div>
+                                    <p class="text-[9px] text-sky-300 uppercase font-bold tracking-wider">NOMOR INDUK SISWA NASIONAL (NISN)</p>
+                                    <p id="card-nisn" class="font-black text-lg tracking-widest text-yellow-300 leading-none mt-0.5">0010482591</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Card Footer with Barcode -->
+                        <div class="bg-white/95 rounded-xl p-2 flex items-center justify-between border border-slate-200">
+                            <div id="card-barcode-container" class="w-full flex justify-center">
+                                <!-- Dynamic SVG Barcode injected here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Direct Actions Bar -->
+                    <div class="max-w-md mx-auto bg-slate-100 rounded-xl p-3 flex items-center justify-between border border-slate-200">
+                        <span class="text-xs text-slate-600 font-medium">
+                            NISN Aktif: <strong id="bottom-bar-nisn-text" class="text-slate-800 font-bold ml-1">0010482591</strong>
+                        </span>
+                        <div class="flex space-x-2">
+                            <button onclick="copyCurrentSingleNisn()" class="bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 px-3 py-1.5 rounded-lg text-xs font-semibold shadow-sm transition flex items-center">
+                                <i class="fa-regular fa-copy mr-1"></i> Salin NISN
+                            </button>
+                            <button onclick="printOrSaveCard()" class="bg-brand-600 hover:bg-brand-700 text-white px-3 py-1.5 rounded-lg text-xs font-semibold shadow-sm transition flex items-center">
+                                <i class="fa-solid fa-print mr-1"></i> Cetak Kartu
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- TAB 2: GENERASI MASSAL -->
+        <div id="tab-bulk" class="tab-content space-y-6">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
+                <div class="flex flex-col md:flex-row md:items-center justify-between pb-6 border-b border-slate-100 gap-4">
+                    <div>
+                        <h2 class="text-lg font-bold text-slate-900 flex items-center">
+                            <i class="fa-solid fa-users text-brand-500 mr-2.5"></i>Generasi NISN Massal (Kolektif)
+                        </h2>
+                        <p class="text-xs text-slate-400 mt-1">Sangat cocok untuk Guru, Operator Sekolah, atau Riset Database dalam volume banyak sekaligus.</p>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <button onclick="loadBulkDemoData()" class="px-3.5 py-2 border border-brand-200 text-brand-700 bg-brand-50 rounded-xl text-xs font-semibold hover:bg-brand-100 transition">
+                            <i class="fa-solid fa-lightbulb mr-1.5"></i> Load Demo Data
+                        </button>
+                        <button onclick="clearBulkTable()" class="px-3.5 py-2 border border-rose-200 text-rose-600 bg-rose-50 rounded-xl text-xs font-semibold hover:bg-rose-100 transition">
+                            <i class="fa-solid fa-trash mr-1.5"></i> Bersihkan Semua
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Bulk Input Area -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mt-6">
+                    <div class="lg:col-span-4 space-y-4">
+                        <div>
+                            <label for="bulk-text-input" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Input Baris Siswa (Format CSV / Teks Biasa)</label>
+                            <span class="block text-[11px] text-slate-400 mb-2">
+                                Masukkan <strong>Nama Lengkap, Tahun Lahir</strong> (satu baris untuk satu siswa).
+                            </span>
+                            <textarea id="bulk-text-input" rows="8" placeholder="Format: Nama Lengkap, Tahun Lahir&#10;Contoh:&#10;Ahmad 2010, 2010&#10;Siti 2020, 2020&#10;Budi Gunawan, 2012&#10;Ahmad Dahlan, 1999"
+                                class="block w-full px-4 py-3 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all font-mono placeholder:text-slate-400 leading-relaxed"></textarea>
+                        </div>
+                        <button onclick="processBulkInput()" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-3 px-4 rounded-xl text-xs transition flex items-center justify-center shadow-md">
+                            <i class="fa-solid fa-play-circle mr-2 text-base"></i> Proses & Generate Massal
+                        </button>
+                    </div>
+
+                    <!-- Bulk Output Table Dashboard -->
+                    <div class="lg:col-span-8 flex flex-col h-full border border-slate-100 rounded-xl overflow-hidden bg-slate-50">
+                        <!-- Table controls -->
+                        <div class="bg-white px-4 py-3 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                            <div class="flex items-center space-x-2">
+                                <span class="bg-brand-100 text-brand-800 text-xs font-bold px-2.5 py-1 rounded-full flex items-center">
+                                    <span id="bulk-count-badge" class="mr-1">0</span> Data Terproses
+                                </span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <div class="relative">
+                                    <span class="absolute inset-y-0 left-0 pl-2.5 flex items-center text-slate-400 pointer-events-none">
+                                        <i class="fa-solid fa-magnifying-glass text-xs"></i>
+                                    </span>
+                                    <input type="text" id="bulk-search-input" onkeyup="filterBulkTable()" placeholder="Cari Siswa..."
+                                        class="pl-8 pr-3 py-1.5 w-40 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:ring-1 focus:ring-brand-500 focus:border-brand-500">
+                                </div>
+                                <button onclick="exportBulkToCSV()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-xs font-semibold shadow-sm transition flex items-center">
+                                    <i class="fa-solid fa-file-excel mr-1.5"></i> Ekspor CSV
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Main Table -->
+                        <div class="flex-grow overflow-x-auto">
+                            <table class="min-w-full divide-y divide-slate-200 text-left text-xs bg-white">
+                                <thead class="bg-slate-50 text-slate-600 uppercase font-semibold">
+                                    <tr>
+                                        <th scope="col" class="px-4 py-3 text-center w-12">No</th>
+                                        <th scope="col" class="px-4 py-3">Nama Lengkap</th>
+                                        <th scope="col" class="px-4 py-3 w-32">Tahun Lahir</th>
+                                        <th scope="col" class="px-4 py-3 w-40 font-mono">NISN Generated</th>
+                                        <th scope="col" class="px-4 py-3 text-center w-28">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="bulk-table-tbody" class="divide-y divide-slate-100">
+                                    <!-- Dynamic rows from script -->
+                                    <tr>
+                                        <td colspan="5" class="px-4 py-12 text-center text-slate-400">
+                                            <i class="fa-solid fa-inbox text-3xl mb-3 block"></i>
+                                            Belum ada data. Tulis data di samping atau klik <strong>"Load Demo Data"</strong> untuk memulai simulasi.
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: VALIDATOR / CEK FORMAT NISN -->
+        <div id="tab-validator" class="tab-content space-y-6">
+            <div class="max-w-2xl mx-auto bg-white rounded-2xl shadow-sm border border-slate-100 p-6 md:p-8 space-y-8">
+                <div class="text-center">
+                    <div class="mx-auto w-12 h-12 rounded-full bg-brand-100 text-brand-700 flex items-center justify-center mb-3">
+                        <i class="fa-solid fa-qrcode text-xl"></i>
+                    </div>
+                    <h2 class="text-lg font-bold text-slate-900">Validasi & Dekonstruksi Format NISN</h2>
+                    <p class="text-xs text-slate-400 mt-1 max-w-md mx-auto">
+                        Masukkan 10 digit nomor NISN untuk menganalisis kecocokan format standar Kemendikbudristek RI dan mendeteksi dugaan tahun kelahiran siswa secara otomatis.
+                    </p>
+                </div>
+
+                <!-- Validator Input box -->
+                <div class="space-y-4">
+                    <div class="flex space-x-2">
+                        <div class="relative flex-grow">
+                            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400 pointer-events-none">
+                                <i class="fa-solid fa-fingerprint text-sm"></i>
+                            </span>
+                            <input type="text" id="nisn-validator-input" maxlength="10" placeholder="Masukkan 10 digit NISN..."
+                                class="block w-full pl-10 pr-4 py-3 text-base bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 tracking-widest font-mono text-center font-bold placeholder:text-slate-400 placeholder:tracking-normal placeholder:font-sans">
+                        </div>
+                        <button onclick="validateNISNNumber()" class="bg-brand-600 hover:bg-brand-700 text-white font-semibold px-6 py-3 rounded-xl text-sm transition shadow-md shadow-brand-50 flex items-center">
+                            <i class="fa-solid fa-magnifying-glass mr-2"></i> Periksa
+                        </button>
+                    </div>
+                    <div class="flex justify-between items-center px-1">
+                        <span class="text-[10px] text-slate-400">Pastikan hanya karakter angka tanpa spasi/tanda hubung.</span>
+                        <button onclick="clearValidator()" class="text-[10px] text-rose-500 hover:text-rose-700 font-semibold transition">Hapus Input</button>
+                    </div>
+                </div>
+
+                <!-- Analysis Results (Hidden by default) -->
+                <div id="validator-result-box" class="hidden border border-slate-100 rounded-2xl p-6 bg-slate-50/50 space-y-6 animate-fade-in">
+                    <div class="flex items-center justify-between pb-4 border-b border-slate-100">
+                        <h4 class="text-sm font-bold text-slate-800">Laporan Hasil Analisis Format</h4>
+                        <span id="validator-status-pill" class="text-[10px] font-bold px-2.5 py-1 rounded-full uppercase border">VALID</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Left Data column -->
+                        <div class="space-y-3 text-xs">
+                            <div>
+                                <span class="text-slate-400 block mb-0.5">Struktur Kode Depan (Kode Tahun Lahir)</span>
+                                <strong id="val-prefix-code" class="text-slate-800 font-mono text-sm">0010</strong>
+                            </div>
+                            <div>
+                                <span class="text-slate-400 block mb-0.5 font-sans">Dugaan Tahun Kelahiran Siswa</span>
+                                <strong id="val-year-estimation" class="text-slate-800 font-mono text-sm">2010</strong>
+                            </div>
+                        </div>
+
+                        <!-- Right Data column -->
+                        <div class="space-y-3 text-xs">
+                            <div>
+                                <span class="text-slate-400 block mb-0.5">Struktur Sisa Digit (Nomor Urut Unik)</span>
+                                <strong id="val-suffix-code" class="text-slate-800 font-mono text-sm">482591</strong>
+                            </div>
+                            <div>
+                                <span class="text-slate-400 block mb-0.5">Status Integritas Digit</span>
+                                <strong id="val-length-status" class="text-emerald-600 font-semibold">Tepat 10 Karakter Angka</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Custom Explanation -->
+                    <div class="p-3.5 bg-brand-50/50 border border-brand-100 rounded-xl">
+                        <p id="val-explanation-text" class="text-xs text-brand-900 leading-relaxed font-medium">
+                            Nomor NISN ini valid secara format penulisan. Berdasarkan data di atas, pemilik NISN diduga kuat lahir pada kisaran tahun 2010.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 4: ATURAN NISN -->
+        <div id="tab-info" class="tab-content space-y-6">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 md:p-8">
+                <div class="pb-6 border-b border-slate-100 max-w-3xl">
+                    <h2 class="text-xl font-extrabold text-slate-900 flex items-center">
+                        <i class="fa-solid fa-circle-question text-brand-500 mr-2.5"></i>Bagaimana Struktur NISN Terbentuk?
+                    </h2>
+                    <p class="text-xs text-slate-400 mt-1.5 leading-relaxed">
+                        Nomor Induk Siswa Nasional (NISN) diterbitkan secara resmi oleh Pusat Data dan Teknologi Informasi (Pusdatin) Kemendikbudristek RI. NISN bersifat unik, permanen, dan membedakan satu siswa dengan siswa lainnya di seluruh Indonesia.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mt-8 items-start">
+                    
+                    <!-- Left: Explanation of Digits -->
+                    <div class="lg:col-span-7 space-y-6">
+                        <h3 class="text-sm font-bold text-slate-900 uppercase tracking-widest text-brand-700">Skema Kode 10 Digit</h3>
+                        
+                        <!-- Visualization Card -->
+                        <div class="bg-slate-900 text-white rounded-xl p-6 shadow-md flex justify-center items-center font-mono text-xl md:text-2xl tracking-widest">
+                            <span class="text-yellow-400 font-bold border-b-2 border-yellow-400 pb-1" title="Awalan Kode Tahun">0010</span>
+                            <span class="text-slate-400" title="Pemisah Hubungan">-</span>
+                            <span class="text-sky-300 font-semibold border-b-2 border-sky-400 pb-1" title="Sisa Nomor Acak Urut Registrasi">482591</span>
+                        </div>
+
+                        <div class="space-y-4">
+                            <!-- Detail 1 -->
+                            <div class="flex space-x-3 items-start">
+                                <span class="w-6 h-6 rounded-full bg-yellow-100 text-yellow-800 text-xs font-bold flex items-center justify-center flex-shrink-0 mt-0.5">1</span>
+                                <div>
+                                    <h4 class="text-sm font-bold text-slate-800">Kode Depan (Aturan Tahun Kelahiran)</h4>
+                                    <p class="text-xs text-slate-500 mt-1 leading-relaxed">
+                                        Mewakili representasi tahun kelahiran siswa. Contohnya:
+                                    </p>
+                                    <ul class="list-disc pl-5 text-xs text-slate-500 mt-1.5 space-y-1">
+                                        <li>Lahir tahun <strong class="text-slate-700">2010</strong>, maka NISN diawali dengan awalan <strong class="text-yellow-600">0010</strong> (Sesuai Aturan Sistem Anda)</li>
+                                        <li>Lahir tahun <strong class="text-slate-700">2020</strong>, maka NISN diawali dengan awalan <strong class="text-yellow-600">0020</strong> (Sesuai Aturan Sistem Anda)</li>
+                                        <li>Lahir tahun <strong class="text-slate-700">2012</strong>, maka NISN diawali dengan <strong class="text-yellow-600">012</strong></li>
+                                        <li>Lahir tahun <strong class="text-slate-700">1999</strong>, maka NISN diawali dengan <strong class="text-yellow-600">999</strong></li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <!-- Detail 2 -->
+                            <div class="flex space-x-3 items-start">
+                                <span class="w-6 h-6 rounded-full bg-sky-100 text-sky-800 text-xs font-bold flex items-center justify-center flex-shrink-0 mt-0.5">2</span>
+                                <div>
+                                    <h4 class="text-sm font-bold text-slate-800">Digit Penggenap (Nomor Acak Unik)</h4>
+                                    <p class="text-xs text-slate-500 mt-1 leading-relaxed">
+                                        Sisa digit disusun secara acak oleh generator database untuk melengkapi total panjang nomor registrasi siswa agar tepat bernilai 10 digit angka unik.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: FAQ Section -->
+                    <div class="lg:col-span-5 bg-slate-50 border border-slate-100 rounded-2xl p-6 space-y-4">
+                        <h3 class="text-xs font-bold text-slate-900 uppercase tracking-widest">Pertanyaan Umum (FAQ)</h3>
+                        
+                        <div class="space-y-4 text-xs">
+                            <div class="border-b border-slate-200 pb-3">
+                                <h4 class="font-bold text-slate-800 flex items-center">
+                                    <i class="fa-solid fa-circle-question text-brand-500 mr-2"></i> Apakah kartu ini resmi?
+                                </h4>
+                                <p class="text-slate-500 mt-1.5 leading-relaxed">
+                                    Tidak. Aplikasi ini hanya generator mockup / data uji simulasi. NISN yang sah hanya dikeluarkan resmi oleh instansi sekolah Anda melalui pendaftaran online Dapodik Kemendikbud.
+                                </p>
+                            </div>
+
+                            <div class="border-b border-slate-200 pb-3">
+                                <h4 class="font-bold text-slate-800 flex items-center">
+                                    <i class="fa-solid fa-circle-question text-brand-500 mr-2"></i> Mengapa format 2010 & 2020 disesuaikan?
+                                </h4>
+                                <p class="text-slate-500 mt-1.5 leading-relaxed">
+                                    Beberapa format integrasi database lama mewajibkan struktur bernilai tetap 00 di depan untuk mempermudah migrasi data tanpa melanggar prinsip keunikan record.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer Area -->
+    <footer class="bg-white border-t border-slate-200 mt-auto py-6">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between text-xs text-slate-500 gap-4">
+            <div class="flex items-center space-x-2">
+                <i class="fa-solid fa-graduation-cap text-brand-500 text-sm"></i>
+                <span class="font-semibold text-slate-700">SIPENISN © 2026</span>
+                <span class="text-slate-300">|</span>
+                <span>Alat Bantu Simulasi Dapodik Independen</span>
+            </div>
+            <div class="flex space-x-4">
+                <a href="#" onclick="switchTab('single')" class="hover:text-brand-600 transition">Generasi Tunggal</a>
+                <a href="#" onclick="switchTab('bulk')" class="hover:text-brand-600 transition">Generasi Massal</a>
+                <a href="#" onclick="switchTab('validator')" class="hover:text-brand-600 transition">Validasi NISN</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Tab switching logic
+        function switchTab(tabId) {
+            // Hide all tab content
+            document.querySelectorAll('.tab-content').forEach(el => {
+                el.classList.remove('active');
+            });
+            // Show current active tab content
+            const targetTab = document.getElementById(`tab-${tabId}`);
+            if (targetTab) {
+                targetTab.classList.add('active');
+            }
+
+            // Update tab button styles
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.className = "tab-btn px-4 py-2 rounded-lg text-sm font-semibold text-brand-100 hover:bg-brand-700 hover:text-white transition";
+            });
+
+            // Highlight current menu button on desktop
+            const currentBtn = document.getElementById(`nav-${tabId}`);
+            if (currentBtn) {
+                currentBtn.className = "tab-btn px-4 py-2 rounded-lg text-sm font-semibold bg-brand-700 text-white shadow-sm transition";
+            }
+            
+            state.currentTab = tabId;
+        }
+
+        // Toggle Responsive Mobile Menu
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            const icon = document.getElementById('mobile-menu-icon');
+            if (menu.classList.contains('hidden')) {
+                menu.classList.remove('hidden');
+                icon.className = "fa-solid fa-xmark text-2xl";
+            } else {
+                menu.classList.add('hidden');
+                icon.className = "fa-solid fa-bars text-2xl";
+            }
+        }
+
+        // Realtime update of the virtual student card preview
+        function updateVirtualCardLive() {
+            const nameInput = document.getElementById('student-name').value.trim() || 'Budi Santoso';
+            const genderInput = document.getElementById('student-gender').value;
+            const birthDateInput = document.getElementById('birth-date').value;
+            const birthPlaceInput = document.getElementById('birth-place').value.trim() || 'Jakarta';
+            
+            // Format Birth Date output (DD-MM-YYYY)
+            let formattedDate = '';
+            let birthYear = 2010;
+            if (birthDateInput) {
+                const parts = birthDateInput.split('-');
+                if (parts.length === 3) {
+                    formattedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
+                    birthYear = parseInt(parts[0]);
+                }
+            }
+            
+            // Extract Prefix from birth year (dengan aturan khusus 2010/2020)
+            const birthYearStr = birthYear.toString();
+            let prefix = '';
+            if (birthYearStr === '2010') {
+                prefix = '0010';
+            } else if (birthYearStr === '2020') {
+                prefix = '0020';
+            } else {
+                prefix = birthYearStr.substring(birthYearStr.length - 3);
+            }
+
+            // Fetch current NISN value or preserve existing if generated
+            const cardNisnElement = document.getElementById('card-nisn');
+            let currentCardNisn = cardNisnElement.innerText;
+            
+            // Jika prefiks berubah, generate ulang NISN agar sesuai dengan aturan tahun lahir terbaru
+            if (!currentCardNisn.startsWith(prefix)) {
+                currentCardNisn = generateNisnFromYear(birthYear);
+            }
+
+            // Update DOM
+            document.getElementById('card-name').innerText = nameInput;
+            document.getElementById('card-gender').innerText = genderInput;
+            document.getElementById('card-ttl').innerText = `${birthPlaceInput}, ${formattedDate}`;
+            cardNisnElement.innerText = currentCardNisn;
+            document.getElementById('bottom-bar-nisn-text').innerText = currentCardNisn;
+            
+            // Update Avatar icon based on gender
+            const avatarIcon = document.getElementById('gender-avatar-icon');
+            if (genderInput === 'Perempuan') {
+                avatarIcon.className = "fa-solid fa-user-graduate text-3xl text-rose-400";
+            } else {
+                avatarIcon.className = "fa-solid fa-user-tie text-3xl text-brand-400";
+            }
+
+            // Render matching dynamic Barcode
+            const barcodeContainer = document.getElementById('card-barcode-container');
+            barcodeContainer.innerHTML = generateSvgBarcode(currentCardNisn);
+        }
+
+        // Generate Single NISN on Form Submit
+        function triggerSingleGeneration() {
+            const birthDateInput = document.getElementById('birth-date').value;
+            if (!birthDateInput) return;
+            
+            const birthYear = parseInt(birthDateInput.split('-')[0]);
+            const newNisn = generateNisnFromYear(birthYear);
+            
+            // Set element text directly
+            document.getElementById('card-nisn').innerText = newNisn;
+            document.getElementById('bottom-bar-nisn-text').innerText = newNisn;
+            
+            updateVirtualCardLive();
+            showToast("Sukses mengenerate NISN & memperbarui Kartu Siswa!", "success");
+        }
+
+        // Copy current NISN in Single Generation Tab
+        function copyCurrentSingleNisn() {
+            const currentNisn = document.getElementById('card-nisn').innerText;
+            const studentName = document.getElementById('card-name').innerText;
+            copyToClipboard(currentNisn, `NISN atas nama ${studentName}`);
+        }
+
+        // Print/Save Virtual Card as dynamic print layout
+        function printOrSaveCard() {
+            const cardContent = document.getElementById('virtual-card-element').outerHTML;
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <html>
+                <head>
+                    <title>Cetak Kartu Siswa - SIPENISN</title>
+                    <script src="https://cdn.tailwindcss.com"><\/script>
+                    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+                    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+                    <style>
+                        body { font-family: 'Inter', sans-serif; background: #fff; display: flex; flex-direction: column; justify-content: center; align-items: center; min-h: 100vh; margin: 0; }
+                        @media print {
+                            .no-print { display: none; }
+                            body { background: transparent; }
+                        }
+                    </style>
+                </head>
+                <body class="p-6">
+                    <div class="no-print mb-8 text-center">
+                        <h1 class="text-xl font-bold text-slate-900">Siap untuk Dicetak</h1>
+                        <p class="text-sm text-slate-500 mt-1">Gunakan opsi cetak peramban untuk menyimpan sebagai PDF atau langsung ke printer fisik.</p>
+                        <button onclick="window.print()" class="mt-4 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-xl text-sm transition shadow-md">
+                            <i class="fa-solid fa-print mr-1.5"></i> Hubungkan ke Printer / PDF
+                        </button>
+                    </div>
+                    
+                    <div class="scale-125 md:scale-150 transform origin-center">
+                        ${cardContent}
+                    </div>
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
+        }
+
+        // Reset Form to defaults
+        function resetSingleForm() {
+            document.getElementById('student-name').value = 'Budi Santoso';
+            document.getElementById('student-gender').value = 'Laki-laki';
+            document.getElementById('birth-date').value = '2010-08-17';
+            document.getElementById('birth-place').value = 'Jakarta';
+            
+            updateVirtualCardLive();
+            showToast("Formulir generasi tunggal dikembalikan ke setelan pabrik.", "info");
+        }
+
+        // ==========================================
+        // TAB 2: BULK (MASSAL) GENERATION ENGINE
+        // ==========================================
+        
+        // Demo bulk data (Disesuaikan agar berisi contoh siswa 2010 & 2020)
+        const demoBulkStudents = [
+            { name: "Ahmad Lahir 2010", year: "2010" },
+            { name: "Siti Lahir 2020", year: "2020" },
+            { name: "Andi Wijaya", year: "2012" },
+            { name: "Dewi Lestari", year: "2011" },
+            { name: "M. Rizky Pratama", year: "2013" },
+            { name: "Fajar Nugraha", year: "2009" },
+            { name: "Indah Permata", year: "2011" }
+        ];
+
+        function loadBulkDemoData() {
+            const formattedLines = demoBulkStudents.map(s => `${s.name}, ${s.year}`).join('\n');
+            document.getElementById('bulk-text-input').value = formattedLines;
+            showToast("Demo data berhasil dimuat! Klik tombol 'Proses & Generate Massal' di bawahnya.", "info");
+        }
+
+        // Process textarea inputs for mass processing
+        function processBulkInput() {
+            const rawText = document.getElementById('bulk-text-input').value.trim();
+            if (!rawText) {
+                showToast("Data input massal masih kosong. Silakan isi terlebih dahulu.", "error");
+                return;
+            }
+
+            const lines = rawText.split('\n');
+            const processedList = [];
+
+            lines.forEach(line => {
+                if (!line.trim()) return; // skip blank line
+                
+                // Expect comma-separated values: Name, Year
+                const parts = line.split(',');
+                let name = "Nama Siswa";
+                let year = "2010";
+
+                if (parts.length >= 2) {
+                    name = parts[0].trim();
+                    year = parts[1].trim();
+                } else {
+                    name = parts[0].trim();
+                }
+
+                // Strip non-numbers from year
+                year = year.replace(/\D/g, '');
+                if (!year || year.length < 4) {
+                    year = "2010"; // Default standard
+                }
+
+                // Generate valid structured NISN
+                const generatedNisn = generateNisnFromYear(year);
+
+                processedList.push({
+                    name: name,
+                    year: year,
+                    nisn: generatedNisn
+                });
+            });
+
+            state.bulkStudents = processedList;
+            renderBulkTable();
+            showToast(`Sukses memproses & mengenerate NISN sebanyak ${processedList.length} siswa!`, "success");
+        }
+
+        // Render data inside Bulk Table
+        function renderBulkTable(filteredData = null) {
+            const tbody = document.getElementById('bulk-table-tbody');
+            const listToRender = filteredData || state.bulkStudents;
+            
+            // Update counts badge
+            document.getElementById('bulk-count-badge').innerText = state.bulkStudents.length;
+
+            if (listToRender.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="px-4 py-12 text-center text-slate-400">
+                            <i class="fa-solid fa-face-sad-tear text-3xl mb-3 block text-slate-300"></i>
+                            Tidak ada data siswa ditemukan.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            let htmlContent = '';
+            listToRender.forEach((student, index) => {
+                const originalIndex = state.bulkStudents.indexOf(student) + 1;
+                htmlContent += `
+                    <tr class="hover:bg-slate-50 transition duration-150">
+                        <td class="px-4 py-3 text-center text-slate-500 font-mono font-bold">${originalIndex}</td>
+                        <td class="px-4 py-3 font-semibold text-slate-800">${student.name}</td>
+                        <td class="px-4 py-3 text-slate-600">${student.year}</td>
+                        <td class="px-4 py-3 font-mono font-bold text-brand-700 tracking-wider text-sm">${student.nisn}</td>
+                        <td class="px-4 py-3 text-center">
+                            <div class="flex items-center justify-center space-x-1.5">
+                                <button onclick="copyToClipboard('${student.nisn}', 'NISN ${student.name}')" 
+                                    class="p-1 px-2.5 bg-slate-100 hover:bg-brand-50 border border-slate-200 hover:border-brand-200 text-slate-700 hover:text-brand-700 rounded-lg text-xs font-semibold transition flex items-center gap-1"
+                                    title="Copy NISN">
+                                    <i class="fa-regular fa-copy"></i> Copy
+                                </button>
+                                <button onclick="deleteBulkItem(${originalIndex - 1})" 
+                                    class="p-1 bg-rose-50 hover:bg-rose-100 border border-rose-100 text-rose-600 rounded-lg text-xs transition"
+                                    title="Hapus Baris">
+                                    <i class="fa-solid fa-trash-can px-0.5"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            tbody.innerHTML = htmlContent;
+        }
+
+        // Delete single item from Bulk list
+        function deleteBulkItem(index) {
+            state.bulkStudents.splice(index, 1);
+            renderBulkTable();
+            showToast("Satu item baris berhasil dihapus.", "info");
+        }
+
+        // Clear all bulk state
+        function clearBulkTable() {
+            state.bulkStudents = [];
+            document.getElementById('bulk-text-input').value = '';
+            document.getElementById('bulk-search-input').value = '';
+            renderBulkTable();
+            showToast("Semua database generator massal dikosongkan.", "info");
+        }
+
+        // Live Filter/Search database inside Bulk Table
+        function filterBulkTable() {
+            const query = document.getElementById('bulk-search-input').value.toLowerCase().trim();
+            if (!query) {
+                renderBulkTable();
+                return;
+            }
+
+            const filtered = state.bulkStudents.filter(s => {
+                return s.name.toLowerCase().includes(query) || s.nisn.includes(query) || s.year.includes(query);
+            });
+            renderBulkTable(filtered);
+        }
+
+        // Export bulk list to formatted CSV
+        function exportBulkToCSV() {
+            if (state.bulkStudents.length === 0) {
+                showToast("Tidak ada data untuk diekspor. Silakan generate terlebih dahulu.", "error");
+                return;
+            }
+
+            // Define CSV Headers
+            let csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += "No,Nama Siswa,Tahun Lahir,NISN Generated\n";
+
+            // Add rows
+            state.bulkStudents.forEach((s, idx) => {
+                csvContent += `${idx + 1},"${s.name}",${s.year},'${s.nisn}\n`;
+            });
+
+            // Trigger Download File
+            const encodedUri = encodeURI(csvContent);
+            const downloadLink = document.createElement("a");
+            downloadLink.setAttribute("href", encodedUri);
+            downloadLink.setAttribute("download", `SIPENISN_Export_${Date.now()}.csv`);
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+            showToast("File CSV Berhasil diekspor! Silakan cek folder download Anda.", "success");
+        }
+
+        // ==========================================
+        // TAB 3: VALIDATOR ENGINE
+        // ==========================================
+        function validateNISNNumber() {
+            const rawInput = document.getElementById('nisn-validator-input').value.trim();
+            const resultBox = document.getElementById('validator-result-box');
+            
+            // Validation tests
+            const isNumeric = /^\d+$/.test(rawInput);
+            const hasCorrectLength = rawInput.length === 10;
+
+            if (!rawInput) {
+                showToast("Silakan isi nomor NISN yang ingin diperiksa terlebih dahulu.", "error");
+                return;
+            }
+
+            if (!isNumeric) {
+                showToast("Format NISN hanya diperbolehkan berisi angka saja.", "error");
+                return;
+            }
+
+            // Reveal analysis box with animation
+            resultBox.classList.remove('hidden');
+
+            const statusPill = document.getElementById('validator-status-pill');
+            const valPrefixCode = document.getElementById('val-prefix-code');
+            const valYearEst = document.getElementById('val-year-estimation');
+            const valSuffixCode = document.getElementById('val-suffix-code');
+            const valLengthStatus = document.getElementById('val-length-status');
+            const valExplanationText = document.getElementById('val-explanation-text');
+
+            if (isNumeric && hasCorrectLength) {
+                // SUCCESS STATS
+                statusPill.innerText = "VALID FORMAT";
+                statusPill.className = "text-[10px] font-bold px-2.5 py-1 rounded-full uppercase border border-emerald-200 bg-emerald-50 text-emerald-700";
+                
+                let prefix = '';
+                let suffix = '';
+                let birthYearEst = '';
+
+                // Memproses kasus khusus awalan 0010 atau 0020 untuk mendeteksi tahun lahir secara presisi
+                if (rawInput.startsWith('0010')) {
+                    prefix = '0010';
+                    suffix = rawInput.substring(4);
+                    birthYearEst = '2010';
+                } else if (rawInput.startsWith('0020')) {
+                    prefix = '0020';
+                    suffix = rawInput.substring(4);
+                    birthYearEst = '2020';
+                } else {
+                    // Skema dekonstruksi standar
+                    prefix = rawInput.substring(0, 3);
+                    suffix = rawInput.substring(3);
+                    
+                    const firstDigit = prefix.charAt(0);
+                    if (firstDigit === '0') {
+                        birthYearEst = "20" + prefix.substring(1);
+                    } else if (firstDigit === '1' || firstDigit === '2') {
+                        birthYearEst = "20" + prefix.substring(1);
+                    } else {
+                        birthYearEst = "19" + prefix.substring(1);
+                    }
+                }
+                
+                valPrefixCode.innerText = prefix;
+                valSuffixCode.innerText = suffix;
+                valLengthStatus.innerText = "Tepat 10 Karakter Angka";
+                valLengthStatus.className = "text-emerald-600 font-semibold";
+                valYearEst.innerText = `${birthYearEst} (Terdeteksi Sistem)`;
+
+                valExplanationText.innerHTML = `
+                    Struktur format NISN ini <strong class="text-emerald-800 font-bold">SESUAI standar sistem Anda</strong>. 
+                    Berdasarkan analisis algoritma penomoran, pemilik NISN ini lahir pada tahun <strong>${birthYearEst}</strong> dengan representasi kode depan <strong>${prefix}</strong>.
+                    Pola sisa digit belakang <strong>(${suffix})</strong> diidentifikasi sebagai urutan registrasi dapodik acak.
+                `;
+                showToast("Selesai menganalisis! Format nomor NISN dinyatakan Valid.", "success");
+
+            } else {
+                // FAILURE STATS
+                statusPill.innerText = "TIDAK VALID";
+                statusPill.className = "text-[10px] font-bold px-2.5 py-1 rounded-full uppercase border border-rose-200 bg-rose-50 text-rose-700";
+                
+                valPrefixCode.innerText = rawInput.substring(0, Math.min(3, rawInput.length)) || "-";
+                valSuffixCode.innerText = rawInput.substring(3) || "-";
+                valLengthStatus.innerText = `Salah (${rawInput.length} karakter)`;
+                valLengthStatus.className = "text-rose-600 font-semibold";
+                valYearEst.innerText = "Tidak dapat didefinisikan";
+
+                valExplanationText.innerHTML = `
+                    Format NISN <strong class="text-rose-800">TIDAK SESUAI standar</strong>. 
+                    NISN resmi harus memiliki <span class="underline">tepat 10 digit karakter angka</span>. 
+                    Sedangkan input Anda berjumlah ${rawInput.length} digit. Pastikan tidak ada spasi atau simbol hubung yang terikut.
+                `;
+                showToast("Format NISN tidak sesuai standar nasional 10 digit.", "error");
+            }
+        }
+
+        // Clear validator parameters
+        function clearValidator() {
+            document.getElementById('nisn-validator-input').value = '';
+            document.getElementById('validator-result-box').classList.add('hidden');
+            showToast("Kotak validasi berhasil dikosongkan.", "info");
+        }
+
+        // Initialize state defaults on window load
+        window.onload = function() {
+            // Initiate the live virtual card card with default values
+            updateVirtualCardLive();
+        };
+    </script>
+</body>
+</html>
